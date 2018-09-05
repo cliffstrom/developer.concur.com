@@ -76,13 +76,13 @@ Authorization: Bearer {token}
 
 ### eReceipts
 
-|Endpoint|Response Format|Request Summary|
-|---|---|---|
-|[GET /schemas](#endpoint-schemas)|JSON|Get currently supported receipt schemas|
-|[POST /v4/users/:userId](#endpoint-post-a-receipt)|N/A|Post a receipt|
-|[GET /v4/users/:userId](#endpoint-get-receipts-by-userid)|JSON|Get a user's receipts|
-|[GET /v4/:receiptId](#endpoint-get-a-receipt-by-id)|JSON|Get a receipt by ID|
-|[GET /v4/:receiptId/image](#endpoint-get-receipt-image)|image file|Get a receipt image.|
+Endpoint|Response Format|Request Summary
+---|---|---
+[GET /schemas](#endpoint-schemas)|JSON|Get currently supported receipt schemas
+[POST /v4/users/:userId](#endpoint-post-a-receipt)|N/A|Post a receipt
+[GET /v4/users/:userId](#endpoint-get-receipts-by-userid)|JSON|Get a user's receipts
+[GET /v4/:receiptId](#endpoint-get-a-receipt-by-id)|JSON|Get a receipt by ID
+[GET /v4/:receiptId/image](#endpoint-get-receipt-image)|image file|Get a receipt image.
 
 ##### Endpoint: Schemas
 
@@ -100,28 +100,18 @@ One of the receipt schemas must be included in the [link header](http://json-sch
 
 _Example Requests:_
 
-cURL for the schema index:
+The schema index:
 
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/schemas/
+GET https://us.api.concursolutions.com/receipts/schemas/
+Authorization: Bearer {YOUR ACCESS TOKEN}
 ```
 
-HTTPie for the schema index:
+A single schema:
 
 ```shell
-http https://us.api.concursolutions.com/receipts/schemas 'Authorization:Bearer {YOUR ACCESS TOKEN}'
-```
-
-cURL for a single schema:
-
-```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/schemas/car-rental-receipt.schema.json
-```
-
-HTTPie for a single schema:
-
-```shell
-http https://us.api.concursolutions.com/receipts/schemas/car-rental-receipt.schema.json 'Authorization:Bearer {YOUR ACCESS TOKEN}'
+GET https://us.api.concursolutions.com/receipts/schemas/car-rental-receipt.schema.json
+Authorization: Bearer {YOUR ACCESS TOKEN}
 ```
 
 _Example Response:_
@@ -224,9 +214,9 @@ _Example Response:_
 
 ###### GET /v4/status/:receiptId
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|receiptId|required|The UUID of the receipt associated with the image.|
+Parameter|Requirement|Value
+---|---|---
+receiptId|required|The UUID of the receipt associated with the image.
 
 This endpoint may be used to see the current processing status of a receipt.
 
@@ -238,29 +228,22 @@ In additional to a high level status, information will be provided in an array o
 
 Example event messages:
 
-|Type|Message|
-|---|---|
-|INFO| Receipt accepted. Queued for processing. |
-|INFO| Initiated receipt processing. (event for each attempt) |
-|ERROR| Error from User Profile service. Queued for reprocessing. |
-|ERROR| Error from Imaging service. Queued for reprocessing. |
-|ERROR| Error during image generation or retrieval. Queued for reprocessing. |
-|INFO| Receipt image generated. |
-|ERROR| Processing failed. |
-|INFO| Processing finished. |
+Type|Message
+---|---
+INFO| Receipt accepted. Queued for processing.
+INFO| Initiated receipt processing. (event for each attempt)
+ERROR| Error from User Profile service. Queued for reprocessing.
+ERROR| Error from Imaging service. Queued for reprocessing.
+ERROR| Error during image generation or retrieval. Queued for reprocessing.
+INFO| Receipt image generated.
+ERROR| Processing failed.
+INFO| Processing finished.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/status/{RECEIPT ID}
-```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/status/{RECEIPT ID} "Authorization: Bearer {YOUR ACCESS TOKEN}"
+GET https://us.api.concursolutions.com/receipts/v4/status/{receiptId}
+Authorization: Bearer {token}
 ```
 
 _Example Response:_
@@ -297,11 +280,11 @@ _Example Response:_
 
 ###### _POST /v4/users/:userId_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|userId|required|The UUID of the user to whom the receipt belongs.|
-|receipt|required|The JSON receipt to be posted.|
-|image|optional|Image of the receipt. If an image isn't provided, one will be generated automatically from the JSON.|
+Parameter|Requirement|Value
+---|---|---
+userId|required|The UUID of the user to whom the receipt belongs.
+receipt|required|The JSON receipt to be posted.
+image|optional|Image of the receipt. If an image isn't provided, one will be generated automatically from the JSON.
 
 Creating a receipt requires JSON data about the transaction and, optionally, an image of the receipt. If an image is not supplied with the request, Concur will automatically generate a receipt image based on the data provided. [JSON schemas](https://developer.concur.com/api-reference/receipts/get-started.html#endpoint-schemas) are used to validate the format of receipt data received in POST requests.
 
@@ -313,42 +296,27 @@ Receipt images may be posted along with data. In this case, Concur will use the 
 
 _Example Requests:_
 
-cURL data without image:
-
 ```shell
-curl -v -X POST https://us.api.concursolutions.com/receipts/v4/users/{USER ID FROM YOUR ID TOKEN} \
--H "Authorization: Bearer {YOUR ACCESS TOKEN}" \
--H "Content-Type: application/json" \
--H "link: <http://schema.concursolutions.com/{VALIDATION SCHEMA FROM SCHEMA ENDPOINT}.schema.json>;rel=describedBy" \
--d @{PATH TO YOUR RECEIPT JSON}
+POST https://us.api.concursolutions.com/receipts/v4/users/{userId}
+Authorization: Bearer {token}
+Content-Type: application/json
+Link: <http://schema.concursolutions.com/{VALIDATION SCHEMA FROM SCHEMA ENDPOINT}.schema.json>;rel=describedBy
 ```
 
-cURL data and image:
-
 ```shell
-curl -v -k -X POST https://us.api.concursolutions.com/receipts/v4/users/{USER ID FROM YOUR ID TOKEN} \
--H "Authorization: Bearer {YOUR ACCESS TOKEN}" \
--H "Content-Type:multipart/form-data" \
--H "link: <http://schema.concursolutions.com/{VALIDATION SCHEMA FROM SCHEMA ENDPOINT}.schema.json>;rel=describedBy" \
--F "receipt=<{PATH TO YOUR RECEIPT JSON};type=application/json" \
--F "image=@{PATH TO YOUR IMAGE};type={FILE MIME TYPE OF YOUR IMAGE}"
-```
-
-HTTPie data without image:
-
-```shell
-http POST https://us.api.concursolutions.com/receipts/v4/users/{USER ID FROM YOUR ID TOKEN} \
-"Authorization:Bearer {YOUR ACCESS TOKEN}" \
-"Content-Type: application/json" \
-"link: <http://schema.concursolutions.com/{VALIDATION SCHEMA FROM SCHEMA ENDPOINT}.schema.json>;rel=describedBy" \
-< {PATH TO YOUR RECEIPT JSON}
+POST https://us.api.concursolutions.com/receipts/v4/users/{userId}
+Authorization: Bearer {YOUR ACCESS TOKEN}
+Content-Type:multipart/form-data
+Link: <http://schema.concursolutions.com/{VALIDATION SCHEMA FROM SCHEMA ENDPOINT}.schema.json>;rel=describedBy
+receipt=<{PATH TO YOUR RECEIPT JSON};type=application/json
+image=@{PATH TO YOUR IMAGE};type={FILE MIME TYPE OF YOUR IMAGE}
 ```
 
 _Example Response:_
 
 ```http
 HTTP/1.1 201 Created
-Link: <http://schema.concursolutions.com/car-rental-receipt.schema.json>; rel="describedBy", <https://us.api.concursolutions.com/receipts/v4/status/b0a4ab2bce8a49a08cf177cb997bf2ee>; rel="processing-status"
+Link: <http://schema.concursolutions.com/car-rental-receipt.schema.json>;rel="describedBy",<https://us.api.concursolutions.com/receipts/v4/status/b0a4ab2bce8a49a08cf177cb997bf2ee>;rel="processing-status"
 Location: https://us.api.concursolutions.com/receipts/v4/b0a4ab2bce8a49a08cf177cb997bf2ee
 Content-Length: 0
 Connection: keep-alive
@@ -358,24 +326,16 @@ Connection: keep-alive
 
 ###### _GET /v4/:receiptId_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|receiptId|required|The UUID of the receipt to be returned.|
+Parameter|Requirement|Value
+---|---|---
+receiptId|required|The UUID of the receipt to be returned.
 
 Returns the JSON receipt associated with the ID in the URL.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/{RECEIPT ID}
-```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/{RECEIPT ID} "Authorization: Bearer {YOUR ACCESS TOKEN}"
+Authorization: Bearer {token} https://us.api.concursolutions.com/receipts/v4/{receiptId}
 ```
 
 _Example Response_
@@ -395,30 +355,21 @@ _Example Response_
 }
 ```
 
-[Back to Top](#endpoints)
-
 ##### Endpoint: Get Receipts By UserId
 
 ###### _GET /v4/users/:userId_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|userId|required|The UUID of the user whose receipts will be returned.|
+Parameter|Requirement|Value
+---|---|---
+userId|required|The UUID of the user whose receipts will be returned.
 
 Returns all receipts for a given user ID.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/users/{USER ID}
-```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/users/{USER ID} "Authorization: Bearer {YOUR ACCESS TOKEN}"
+GET https://us.api.concursolutions.com/receipts/v4/users/{userId}
+Authorization: Bearer {token}
 ```
 
 _Example Response:_
@@ -455,50 +406,39 @@ _Example Response:_
 }
 ```
 
-[Back to Top](#endpoints)
-
 ##### Endpoint: Get Receipt Image
 
 ###### _GET /v4/:receiptId/image_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|receiptId|required|The UUID of the receipt associated with the image.|
+Parameter|Requirement|Value
+---|---|---
+receiptId|required|The UUID of the receipt associated with the image.
 
 If an image or PDF document was generated by or POSTed to Receipts v4, this endpoint can return the image in the same format that it was originally received by the API. Images for receipts created with v3 of the API are _not_ accessible via this endpoint.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/{RECEIPT ID}/image
+GET https://us.api.concursolutions.com/receipts/v4/{receiptId}/image
+Authorization: Bearer {token}
 ```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/{RECEIPT ID}/image "Authorization: Bearer {YOUR ACCESS TOKEN}"
-```
-
-[Back to Top](#endpoints)
 
 ### Image-Only Receipts
 
-|Endpoint|Response Format|Request Summary|
-|---|---|---|
-|[POST /v4/users/:userId/image-only-receipts](#endpoint-post-an-image-only-receipt)|N/A|Post an image-only receipt|
-|[GET /v4/users/:userId/image-only-receipts](#endpoint-get-image-only-receipts-by-userid)|JSON|Get a user's image-only receipts|
-|[GET /v4/image-only-receipts/:receiptId](#endpoint-get-an-image-only-receipt-by-id)|JSON|Get an image-only receipt by ID|
+Endpoint|Response Format|Request Summary
+---|---|---
+[POST /v4/users/:userId/image-only-receipts](#endpoint-post-an-image-only-receipt)|N/A|Post an image-only receipt
+[GET /v4/users/:userId/image-only-receipts](#endpoint-get-image-only-receipts-by-userid)|JSON|Get a user's image-only receipts
+[GET /v4/image-only-receipts/:receiptId](#endpoint-get-an-image-only-receipt-by-id)|JSON|Get an image-only receipt by ID
 
 ##### Endpoint: Post an Image-Only Receipt
 
 ###### _POST /v4/users/:userId/image-only-receipts_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|userId|required|The UUID of the user to whom the receipt image belongs.|
-|image|required|Image of the receipt.|
+Parameter|Requirement|Value
+---|---|---
+userId|required|The UUID of the user to whom the receipt image belongs.
+image|required|Image of the receipt.
 
 * Image constraints
   * Image size must not exceed 5MB
@@ -510,13 +450,11 @@ To post a receipt image, use multipart form data. The Content-Type:multipart/for
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -v -X POST https://us.api.concursolutions.com/receipts/v4/users/{USER ID FROM YOUR ID TOKEN}/image-only-receipts \
--H "Authorization: Bearer {YOUR ACCESS TOKEN}" \
--H "Content-Type:multipart/form-data" \
--F "image=@{PATH TO YOUR IMAGE};type=image/{FILE MIME TYPE OF YOUR IMAGE}"
+POST https://us.api.concursolutions.com/receipts/v4/users/{userId}/image-only-receipts
+Authorization: Bearer {YOUR ACCESS TOKEN}
+Content-Type:multipart/form-data
+image=@{PATH TO YOUR IMAGE};type=image/{FILE MIME TYPE OF YOUR IMAGE}
 ```
 
 _Example Response:_
@@ -529,39 +467,32 @@ Content-Length: 0
 Connection: keep-alive
 ```
 
-[Back to Top](#endpoints)
-
 ##### Endpoint: Get Image-Only Receipts By UserId
 
 ###### _GET /v4/users/:userId/image-only-receipts_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|userId|required|The UUID of the user whose receipt images will be returned.|
+Parameter|Requirement|Value
+---|---|---
+userId|required|The UUID of the user whose receipt images will be returned.
 
 Returns the JSON metadata of receipt images for the user ID specified in the URL. Results should be paginated in the same manner as the eReceipt endpoint.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/users/{USER ID}/image-only-receipts
-```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/users/{USER ID}/image-only-receipts "Authorization: Bearer {YOUR ACCESS TOKEN}"
+GET https://us.api.concursolutions.com/receipts/v4/users/{userId}/image-only-receipts
+Authorization: Bearer {token}
 ```
 
 _Example Response:_
 
-```json
+```shell
 HTTP/1.1 200 OK
 Content-Length: 800
 Connection: keep-alive
+```
 
+```json
 {
 	"receiptsImages": [
 	    {
@@ -576,72 +507,52 @@ Connection: keep-alive
 }
 ```
 
-[Back to Top](#endpoints)
-
 ##### Endpoint: Get an Image-Only Receipt by ID
 
 ###### _GET /v4/image-only-receipts/:receiptId_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|receiptId|required|The UUID of the receipt image to be returned.|
+Parameter|Requirement|Value
+---|---|---
+receiptId|required|The UUID of the receipt image to be returned.
 
 Returns the JSON metadata associated with the ID in the URL.
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -v -X GET https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{RECEIPT ID} \
--H "Authorization: Bearer {YOUR ACCESS TOKEN}"
-```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{RECEIPT ID} "Authorization: Bearer {YOUR ACCESS TOKEN}"
+GET https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{receiptId}
+Authorization: Bearer {token}
 ```
 
 _Example Response_
 
-```json
+```shell
 HTTP/1.1 200 OK
 Content-Length: 272
 Connection: keep-alive
-
-{
-    "dateTimeReceived": "Wed May 24 2017 16:14:17 GMT+00:00",
-    "id": "a90fc48e0f0a44f2bd4838fd773b07a5",
-    "image": "https://us.api.concursolutions.com/receipts/v4/image-only-receipts/a90fc48e0f0a44f2bd4838fd773b07a5/image",
-    "userId": "abcd123456efg"
-}
 ```
 
-[Back to Top](#endpoints)
+```json
+{
+  "dateTimeReceived": "Wed May 24 2017 16:14:17 GMT+00:00",
+  "id": "a90fc48e0f0a44f2bd4838fd773b07a5",
+  "image": "https://us.api.concursolutions.com/receipts/v4/image-only-receipts/a90fc48e0f0a44f2bd4838fd773b07a5/image",
+  "userId": "abcd123456efg"
+}
+```
 
 ##### Endpoint: Get Receipt Image (Image-Only)
 
 ###### _GET /v4/image-only-receipts/:receiptId/image_
 
-|Parameter|Requirement|Value|
-|---|---|---|
-|receiptId|required|The UUID of the receipt image to be returned.|
+Parameter|Requirement|Value
+---|---|---|
+receiptId|required|The UUID of the receipt image to be returned.|
 
 Returns the image in the same format that it was originally received by the API (image/png, image/jpg, image/jpeg, image/tiff, image/tif, image/gif, or application/pdf).
 
 _Example Requests:_
 
-cURL:
-
 ```shell
-curl -H "Authorization: Bearer {YOUR ACCESS TOKEN}" https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{RECEIPT ID}/image
+Authorization: Bearer {token} https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{receiptId}/image
 ```
-
-HTTPie:
-
-```shell
-http https://us.api.concursolutions.com/receipts/v4/image-only-receipts/{RECEIPT ID}/image "Authorization: Bearer {YOUR ACCESS TOKEN}"
-```
-
-[Back to Top](#endpoints)

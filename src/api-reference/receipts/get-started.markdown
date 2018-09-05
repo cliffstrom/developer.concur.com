@@ -1,11 +1,7 @@
 ---
-title: Get Started
+title: Receipt v4 - Get Started
 layout: reference
 ---
-
-# Receipts
-
-## Get Started
 
 - [Overview](#overview)
 - [Version](#version)
@@ -15,7 +11,9 @@ layout: reference
   - [Acquire an Access Token](#retrieve-a-user-access-token)
   - [Explore the API in JavaScript](#explore-the-api-in-javascript)
 
-### Overview
+## Overview
+
+Version 4.0 of the Receipts API offers features like more receipt types, automatic e-receipt generation in end user’s preferred language and ability for partners to provide detailed tax information. Unlike version 3.0, we are discontinuing the use of matching facts; instead the partner will have to create a receipt for a specific end user. Receipts 4.0 works only with the new [Authentication API](https://developer.concur.com/api-reference/authentication/apidoc.html).
 
 The Receipts V4 API accepts three different formulae for posting a receipt:
 
@@ -35,12 +33,7 @@ These two different resources are sent/fetched from the Receipts V4 API via diff
 
 ### Version
 
-- 4.0
-- [3.0](/api-reference-deprecated/version-three/receipts.html) [Deprecation Notice](/changelog/2016/11/07/receipts-version-three-deprecation.html).
-
-#### Overview of Version 4.0
-
-Version 4.0 of the Receipts API offers features like more receipt types, automatic e-receipt generation in end user’s preferred language and ability for partners to provide detailed tax information. Unlike version 3.0, we are discontinuing the use of matching facts; instead the partner will have to create a receipt for a specific end user. Receipts 4.0 works only with the new [Authentication API](https://developer.concur.com/api-reference/authentication/apidoc.html).
+4.0
 
 ### Regional Availability
 
